@@ -2,6 +2,7 @@ const express = require('express')
 const { connectToDb, getDb } = require('./db')
 const { ObjectId } = require('mongodb');
 const cors = require('cors');
+const { credentialResponseDecoded } = require('./decodeCreds');
 // const cors = require('cors');
 
 
@@ -88,6 +89,34 @@ app.get('/posts/page/:page', (req, res) => {
     })
 })
 
+app.post('/loginUser', (req, res) => {
+    const allDetails = credentialResponseDecoded(req.body.credential)
+    
+    db.collection('blogspostUsers').findOne({ email: allDetails.email })
+        .then(userDetails => {
+            if (userDetails) {
+                console.log("User exists");
+                res.status(200).json(userDetails);
+            } else {
+                console.log("User does not exist");
+                const newUserDetails = {
+                    email : allDetails.email,
+                    given_name : allDetails.given_name,
+                    picture : allDetails.picture
+                };
+                db.collection('blogspostUsers').insertOne(newUserDetails)
+                    .then(result => {
+                        res.status(201).json(newUserDetails)
+                    })
+                    .catch(err => {
+                        res.status(500).json({ err: 'error creating new document.' })
+                    });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ err: 'error finding user.' })
+        });
+});
 
 app.post('/posts', (req, res) => {
     const post = req.body
@@ -133,3 +162,4 @@ app.patch('/posts/:id', (req, res) => {
         res.status(500).json({err: 'invalid document id'})
     }
 })
+
