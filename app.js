@@ -102,7 +102,8 @@ app.post('/loginUser', (req, res) => {
                 const newUserDetails = {
                     email : allDetails.email,
                     given_name : allDetails.given_name,
-                    picture : allDetails.picture
+                    picture : allDetails.picture,
+                    userPosts: []
                 };
                 db.collection('blogspostUsers').insertOne(newUserDetails)
                     .then(result => {
