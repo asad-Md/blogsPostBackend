@@ -65,7 +65,7 @@ app.get('/posts/:id', (req, res) => {
     }
 })
 
-app.get('/posts', (req, res) => {
+app.get('/posts/:page', (req, res) => {
     let posts=[] ;  // any name for storing data collection.
 
     //curr page 
