@@ -48,10 +48,6 @@ app.get('/posts1', (req, res) => {
     .catch(()=>{
         res.status(500).json({mssg: 'error getting posts'})
     })
-    //find and other methods returns a cursor.  
-    //cursor -> points to the result set/data in db. 
-    //toArray()-all documents. forEach - one at a time 
-
 })
 
 app.get('/posts/:id', (req, res) => {
@@ -68,6 +64,31 @@ app.get('/posts/:id', (req, res) => {
         res.status(500).json({err: 'invalid id'})
     }
 })
+
+app.get('/posts', (req, res) => {
+    let posts=[] ;  // any name for storing data collection.
+
+    //curr page 
+    const page = req.query.page || 0;  //default page is 0
+                //or req.query.p ... name of parameter of query is optional.   
+                //or req.query.page ? req.query.page : 0     does same thing                                         
+
+    const docsPerPage = 10; //can be any number for every page.
+
+    db.collection('TheBLOGSPOsT')
+    .find()
+    .sort({date: -1})
+    .skip(page * docsPerPage)
+    .limit(docsPerPage)
+    .forEach(post => posts.push(post))
+    .then (() =>{
+        res.status(200).json(posts)
+    })
+    .catch(()=>{
+        res.status(500).json({mssg: 'error getting posts'})
+    })
+})
+
 
 app.post('/posts', (req, res) => {
     const post = req.body
