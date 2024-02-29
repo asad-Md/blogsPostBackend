@@ -50,7 +50,7 @@ app.get('/posts1', (req, res) => {
     })
 })
 
-app.get('/posts/:id', (req, res) => {
+app.get('/posts/id/:id', (req, res) => {
     if (ObjectId.isValid(req.params.id)){
         db.collection('TheBLOGSPOsT')
         .findOne({_id: new ObjectId(req.params.id)})
@@ -65,7 +65,7 @@ app.get('/posts/:id', (req, res) => {
     }
 })
 
-app.get('/posts/:page', (req, res) => {
+app.get('/posts/page/:page', (req, res) => {
     let posts=[] ;  // any name for storing data collection.
 
     //curr page 
