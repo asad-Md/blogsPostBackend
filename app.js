@@ -69,10 +69,10 @@ app.get('/posts/page/:page', (req, res) => {
     let posts=[] ;  // any name for storing data collection.
 
     //curr page 
-    const page = req.query.page || 0;  //default page is 0
+    const page = req.params.page || 0;  //default page is 0
                 //or req.query.p ... name of parameter of query is optional.   
                 //or req.query.page ? req.query.page : 0     does same thing                                         
-
+    console.log(page)
     const docsPerPage = 10; //can be any number for every page.
 
     db.collection('TheBLOGSPOsT')
