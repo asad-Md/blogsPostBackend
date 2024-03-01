@@ -65,8 +65,8 @@ async function verifyIdToken(idToken) {
     const payload = ticket.getPayload();
     return payload;
   } catch (error) {
-    console.error('Error verifying JWT:', error);
-    throw new Error('Failed to verify JWT');
+    console.error('Error verifying JWT:', error.message);
+    throw new Error('Failed to verify JWT: ' + error.message);  
   }
 }
 
