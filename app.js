@@ -19,40 +19,54 @@ const CLIENT_ID =
 const client = new OAuth2Client(CLIENT_ID);
 
 // Function to exchange authorization code for access token
-async function exchangeAuthorizationCodeForAccessToken(authorizationCode) {
-  try {
-    const tokenResponse = await client.tokenRequest({
-      client_id: CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET, // Access secret from environment variable
-      grant_type: "authorization_code",
-      // redirect_uri: "http://localhost:5173", // Replace with your redirect URI
-      code: authorizationCode,
-    });
+// async function exchangeAuthorizationCodeForAccessToken(authorizationCode) {
+//   try {
+//     const tokenResponse = await client.tokenRequest({
+//       client_id: CLIENT_ID,
+//       client_secret: process.env.GOOGLE_CLIENT_SECRET, // Access secret from environment variable
+//       grant_type: "authorization_code",
+//       // redirect_uri: "http://localhost:5173", // Replace with your redirect URI
+//       code: authorizationCode,
+//     });
 
-    return tokenResponse.access_token;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to exchange authorization code for access token");
-  }
-}
+//     return tokenResponse.access_token;
+//   } catch (error) {
+//     console.error(error);
+//     throw new Error("Failed to exchange authorization code for access token");
+//   }
+// }
 
-// Function to validate access token
-async function validateAccessToken(accessToken) {
+// // Function to validate access token
+// async function validateAccessToken(accessToken) {
+//   try {
+//     const ticket = await client.verifyIdToken({
+//       idToken: accessToken,
+//       audience: CLIENT_ID, // Ensure audience matches your client ID
+//     });
+
+//     const payload = ticket.getPayload();
+
+//     return {
+//       isValid: true,
+//       payload: payload, // Contains user information like email and profile picture
+//     };
+//   } catch (error) {
+//     console.error(error);
+//     return { isValid: false };
+//   }
+// }
+
+async function verifyIdToken(idToken) {
   try {
     const ticket = await client.verifyIdToken({
-      idToken: accessToken,
-      audience: CLIENT_ID, // Ensure audience matches your client ID
+      idToken,
+      audience: CLIENT_ID,
     });
-
     const payload = ticket.getPayload();
-
-    return {
-      isValid: true,
-      payload: payload, // Contains user information like email and profile picture
-    };
+    return payload;
   } catch (error) {
-    console.error(error);
-    return { isValid: false };
+    console.error('Error verifying JWT:', error);
+    throw new Error('Failed to verify JWT');
   }
 }
 
@@ -133,16 +147,19 @@ app.get("/posts/page/:page", (req, res) => {
 });
 
 app.post("/loginUser", async (req, res) => {
-  const authCode = req.body.authCode;
+  // const authCode = req.body.authCode;
+  const jwtToken = req.body.credential;
 
   try {
-    const accessToken = await exchangeAuthorizationCodeForAccessToken(authCode);
-    const validationResult = await validateAccessToken(accessToken);
+    const payload = await verifyIdToken(jwtToken);
+
+    // Extract necessary user information from the payload
+    
 
     if (validationResult.isValid) {
-      const email = validationResult.payload.email;
-      const picture = validationResult.payload.picture;
-      const given_name = validationResult.payload.given_name;
+      const email = payload.email;
+      const picture = payload.picture;
+      const given_name = payload.given_name;
       db.collection("blogspostUsers")
         .findOne({ email: email })
         .then((userDetails) => {
@@ -168,7 +185,7 @@ app.post("/loginUser", async (req, res) => {
           }
         })
         .catch((err) => {
-          res.status(500).json({ err: "error finding user." });
+          res.status(500).json({ mssg: "error finding user.",err:err });
         });
       // Use user information in your application logic securely (e.g., create or update user session) 
     } else {
