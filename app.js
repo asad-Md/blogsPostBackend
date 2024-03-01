@@ -152,10 +152,7 @@ app.post("/loginUser", async (req, res) => {
 
   try {
     const payload = await verifyIdToken(jwtToken);
-
     // Extract necessary user information from the payload
-    
-
     if (validationResult.isValid) {
       const email = payload.email;
       const picture = payload.picture;
