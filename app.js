@@ -57,19 +57,19 @@ const client = new OAuth2Client(CLIENT_ID);
 //   }
 // }
 
-async function verifyIdToken(idToken) {
-  try {
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    return payload;
-  } catch (error) {
-    console.error('Error verifying JWT:', error.message);
-    throw new Error('Failed to verify JWT: ' + error.message);  
-  }
-}
+// async function verifyIdToken(idToken) {
+//   try {
+//     const ticket = await client.verifyIdToken({
+//       idToken,
+//       audience: CLIENT_ID,
+//     });
+//     const payload = ticket.getPayload();
+//     return payload;
+//   } catch (error) {
+//     console.error('Error verifying JWT:', error.message);
+//     throw new Error('Failed to verify JWT: ' + error.message);  
+//   }
+// }
 
 let db;
 connectToDb((err) => {
@@ -152,7 +152,7 @@ app.post("/loginUser", async (req, res) => {
   const jwtCode = req.body.credential;
     try {
       // Decode the JWT code to extract payload
-      const payload = decodeJWT(jwtCode);
+      const payload = jwtDecode(jwtCode);
   
       // Extract necessary user information from the payload
       const email = payload.email;
