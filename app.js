@@ -4,6 +4,7 @@ const { ObjectId } = require("mongodb");
 const cors = require("cors");
 const { OAuth2Client } = require("google-auth-library");
 const { credentialResponseDecoded } = require("./decodeCreds");
+const { jwtDecode } = require ("jwt-decode");
 // const cors = require('cors');
 
 // init app & middleware
@@ -148,12 +149,12 @@ app.get("/posts/page/:page", (req, res) => {
 
 app.post("/loginUser", async (req, res) => {
   // const authCode = req.body.authCode;
-  const jwtToken = req.body.credential;
-
-  try {
-    const payload = await verifyIdToken(jwtToken);
-    // Extract necessary user information from the payload
-    if (validationResult.isValid) {
+  const jwtCode = req.body.credential;
+    try {
+      // Decode the JWT code to extract payload
+      const payload = decodeJWT(jwtCode);
+  
+      // Extract necessary user information from the payload
       const email = payload.email;
       const picture = payload.picture;
       const given_name = payload.given_name;
@@ -184,14 +185,11 @@ app.post("/loginUser", async (req, res) => {
         .catch((err) => {
           res.status(500).json({ mssg: "error finding user.",err:err });
         });
-      // Use user information in your application logic securely (e.g., create or update user session) 
-    } else {
-      res.status(401).json({ message: "Invalid access token" });
+    } catch (error) {
+      console.error('Error processing login:', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+
 });
 
 app.post("/posts", (req, res) => {
