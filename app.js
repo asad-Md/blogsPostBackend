@@ -133,7 +133,7 @@ app.get("/posts/page/:page", (req, res) => {
 });
 
 app.post("/loginUser", async (req, res) => {
-  const authCode = req.body.code;
+  const authCode = req.body.authCode;
 
   try {
     const accessToken = await exchangeAuthorizationCodeForAccessToken(authCode);
