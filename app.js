@@ -211,7 +211,7 @@ app.post("/newPost", (req, res) => {
   const Title = filter.clean(newItems.title);
   const Content = filter.clean(newItems.content);
   const author = newItems.email;
-  const date =  generateDateString()
+  const dateString =  generateDateString()
   const img ="https://loremflickr.com/640/360"
   const newPost = { title: Title, content: Content, author: author, date: dateString, img: img };
 
