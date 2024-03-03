@@ -5,8 +5,13 @@ const cors = require("cors");
 const { OAuth2Client } = require("google-auth-library");
 const { credentialResponseDecoded } = require("./decodeCreds");
 const { jwtDecode } = require ("jwt-decode");
-// const cors = require('cors');
 
+//bad words npm package filter.clean("string") 
+const Filter = require('bad-words');
+const filter = new Filter();  
+// or const filter = new Filter({ placeHolder: 'x'});
+
+// const cors = require('cors');
 // init app & middleware
 
 const app = express();
@@ -192,17 +197,41 @@ app.post("/loginUser", async (req, res) => {
 
 });
 
-app.post("/posts", (req, res) => {
-  const post = req.body;
+app.post("/newPost", (req, res) => {
+  const newItems = req.body;
+  const Title = filter.clean(newItems.title);
+  const Content = filter.clean(newItems.content);
+  const author = newItems.email;
+  const date = new Date();
+  const dateString = date.toLocaleDateString();
+  const img ="https://loremflickr.com/640/360"
+  const newPost = { title: Title, content: Content, author: author, date: dateString, img: img };
+
   db.collection("TheBLOGSPOsT")
-    .insertOne(post)
+    .insertOne( newPost )
+    .then(() => {
+      db.collection("blogspostUsers")
+    .updateOne(
+      { email: author },
+      { $push: { userPosts: newPost } }
+    )
     .then((result) => {
-      res.status(201).json(result);
+      if(result.matchedCount > 0) {
+        res.status(200).json({ message: "User's post updated successfully", post: newPost });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
     })
     .catch((err) => {
-      res.status(500).json({ err: "error creating new document" });
+      res.status(500).json({ message: "Error updating user's post", error: err });
+    });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: "Error creating new document", error: err });
     });
 });
+
+
 
 app.delete("/posts/:id", (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
