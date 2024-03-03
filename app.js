@@ -280,7 +280,7 @@ app.delete("/deletePost", (req, res) => {
           })
           .catch((err) => {
             res.status(500).json({
-              mssg: "error updating user's post",
+              mssg: "error deleting user's post",
               error: err,
             });
           });
