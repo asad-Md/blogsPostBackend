@@ -24,6 +24,15 @@ const CLIENT_ID =
 
 const client = new OAuth2Client(CLIENT_ID);
 
+
+function generateDateString() {
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const year = date.getFullYear();
+  const dateString = `${day}-${month}-${year}`;
+  return dateString;
+}
 // Function to exchange authorization code for access token
 // async function exchangeAuthorizationCodeForAccessToken(authorizationCode) {
 //   try {
@@ -202,8 +211,7 @@ app.post("/newPost", (req, res) => {
   const Title = filter.clean(newItems.title);
   const Content = filter.clean(newItems.content);
   const author = newItems.email;
-  const date = new Date();
-  const dateString = date.toLocaleDateString();
+  const date =  generateDateString()
   const img ="https://loremflickr.com/640/360"
   const newPost = { title: Title, content: Content, author: author, date: dateString, img: img };
 
