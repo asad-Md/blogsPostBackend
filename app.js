@@ -167,7 +167,7 @@ app.get("/userPosts/:email", (req, res) => {
     .findOne({ email: email })
     .then((user) => {
       if (user) {
-        res.status(200).json(user.userPosts);
+        res.status(200).json({userPosts : user.userPosts});
       } else {
         res.status(404).json({ mssg: "user not found" });
       }
