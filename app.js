@@ -258,23 +258,42 @@ app.post("/newPost", (req, res) => {
 
 
 
-// app.delete("/posts/:id", (req, res) => {
-//   if (ObjectId.isValid(req.params.id)) {
-//     db.collection("TheBLOGSPOsT")
-//       .deleteOne({ _id: new ObjectId(req.params.id) })
-//       .then(() => {
-//         res.status(200).json(result);
-//       })
-//       .catch(() => {
-//         res
-//           .status(500)
-//           .json({ err: "error deleting document/couldn't delete document" });
-//       });
-//   } else {
-//     res.status(500).json({ err: "invalid id" });
-//   }
-// });
+app.delete("/deletePost", (req, res) => {
+  const postId = req.query.postId;
+  const email = req.query.email;
 
+  if (ObjectId.isValid(postId)) {
+    db.collection("TheBLOGSPOsT")
+      .deleteOne({ _id: new ObjectId(postId) })
+      .then(() => {
+        db.collection("blogspostUsers")
+          .updateOne(
+            { email: email },
+            { $pull: { userPosts: { _id: new ObjectId(postId) } } }
+          )
+          .then((result) => {
+            if (result.matchedCount > 0) {
+              res.status(200).json({ mssg: "User's post deleted successfully" });
+            } else {
+              res.status(404).json({ mssg: "User/Post not found" });
+            }
+          })
+          .catch((err) => {
+            res.status(500).json({
+              mssg: "error updating user's post",
+              error: err,
+            });
+          });
+      })
+      .catch(() => {
+        res
+          .status(500)
+          .json({ err: "error deleting document/couldn't delete document" });
+      });
+  } else {
+    res.status(500).json({ err: "invalid id" });
+  }
+});
 // app.patch("/posts/:id", (req, res) => {
 //   const updates = req.body;
 //   if (ObjectId.isValid(req.params.id)) {
