@@ -161,6 +161,22 @@ app.get("/posts/page/:page", (req, res) => {
     });
 });
 
+app.get("/userPosts/:email", (req, res) => {
+  const email = req.params.email;
+  db.collection("blogspostUsers")
+    .findOne({ email: email })
+    .then((user) => {
+      if (user) {
+        res.status(200).json(user.userPosts);
+      } else {
+        res.status(404).json({ mssg: "user not found" });
+      }
+    })
+    .catch(() => {
+      res.status(500).json({ mssg: "error getting user posts" });
+    });
+});
+
 app.post("/loginUser", async (req, res) => {
   // const authCode = req.body.authCode;
   const jwtCode = req.body.credential;
@@ -242,37 +258,37 @@ app.post("/newPost", (req, res) => {
 
 
 
-app.delete("/posts/:id", (req, res) => {
-  if (ObjectId.isValid(req.params.id)) {
-    db.collection("TheBLOGSPOsT")
-      .deleteOne({ _id: new ObjectId(req.params.id) })
-      .then(() => {
-        res.status(200).json(result);
-      })
-      .catch(() => {
-        res
-          .status(500)
-          .json({ err: "error deleting document/couldn't delete document" });
-      });
-  } else {
-    res.status(500).json({ err: "invalid id" });
-  }
-});
+// app.delete("/posts/:id", (req, res) => {
+//   if (ObjectId.isValid(req.params.id)) {
+//     db.collection("TheBLOGSPOsT")
+//       .deleteOne({ _id: new ObjectId(req.params.id) })
+//       .then(() => {
+//         res.status(200).json(result);
+//       })
+//       .catch(() => {
+//         res
+//           .status(500)
+//           .json({ err: "error deleting document/couldn't delete document" });
+//       });
+//   } else {
+//     res.status(500).json({ err: "invalid id" });
+//   }
+// });
 
-app.patch("/posts/:id", (req, res) => {
-  const updates = req.body;
-  if (ObjectId.isValid(req.params.id)) {
-    db.collection("TheBLOGSPOsT")
-      .updateOne({ _id: new ObjectId(req.params.id) }, { $set: updates })
-      .then((result) => {
-        res.status(200).json(result);
-      })
-      .catch((err) => {
-        res
-          .status(500)
-          .json({ error: "error updating document/couldn't update document" });
-      });
-  } else {
-    res.status(500).json({ err: "invalid document id" });
-  }
-});
+// app.patch("/posts/:id", (req, res) => {
+//   const updates = req.body;
+//   if (ObjectId.isValid(req.params.id)) {
+//     db.collection("TheBLOGSPOsT")
+//       .updateOne({ _id: new ObjectId(req.params.id) }, { $set: updates })
+//       .then((result) => {
+//         res.status(200).json(result);
+//       })
+//       .catch((err) => {
+//         res
+//           .status(500)
+//           .json({ error: "error updating document/couldn't update document" });
+//       });
+//   } else {
+//     res.status(500).json({ err: "invalid document id" });
+//   }
+// });
