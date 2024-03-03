@@ -217,7 +217,7 @@ app.post("/newPost", (req, res) => {
     )
     .then((result) => {
       if(result.matchedCount > 0) {
-        res.status(200).json({ message: "User's post updated successfully", post: newPost });
+        res.status(200).json({ message: "User's post updated successfully" });
       } else {
         res.status(404).json({ message: "User not found" });
       }
