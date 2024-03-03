@@ -161,13 +161,35 @@ app.get("/posts/page/:page", (req, res) => {
     });
 });
 
+// app.get("/userPosts/:email", (req, res) => {
+//   const email = req.params.email;
+//   db.collection("blogspostUsers")
+//     .findOne({ email: email })
+//     .then((user) => {
+//       if (user) {
+
+//         res.status(200).json({userPosts : user.userPosts});
+//       } else {
+//         res.status(404).json({ mssg: "user not found" });
+//       }
+//     })
+//     .catch(() => {
+//       res.status(500).json({ mssg: "error getting user posts" });
+//     });
+// });
+
 app.get("/userPosts/:email", (req, res) => {
   const email = req.params.email;
   db.collection("blogspostUsers")
     .findOne({ email: email })
     .then((user) => {
       if (user) {
-        res.status(200).json({userPosts : user.userPosts});
+        const sortedUserPosts = user.userPosts.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateB - dateA; // sort in descending order
+        });
+        res.status(200).json({userPosts : sortedUserPosts});
       } else {
         res.status(404).json({ mssg: "user not found" });
       }
