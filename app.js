@@ -205,7 +205,7 @@ app.post("/loginUser", async (req, res) => {
             db.collection("blogspostUsers")
               .insertOne(newUserDetails)
               .then((result) => {
-                res.status(201).json(newUserDetails);
+                res.status(201).json(result.ops[0]);
               })
               .catch((err) => {
                 res.status(500).json({ err: "error creating new document." });
@@ -258,12 +258,16 @@ app.post("/newPost", (req, res) => {
 
 
 
-app.delete("/deletePost", (req, res) => {
+app.delete("/deletePost", async (req, res) => {
   const postId = req.query.postId;
   const email = req.query.email;
+  const uid = req.query.uid;
+
+  const user =  await db.collection("blogspostUsers").findOne({ email: email });
+  if (user && user._id.toString() === uid ){
 
   if (ObjectId.isValid(postId)) {
-    db.collection("TheBLOGSPOsT")
+      db.collection("TheBLOGSPOsT")
       .deleteOne({ _id: new ObjectId(postId) })
       .then(() => {
         db.collection("blogspostUsers")
@@ -292,6 +296,8 @@ app.delete("/deletePost", (req, res) => {
       });
   } else {
     res.status(500).json({ err: "invalid id" });
+  }} else {
+    res.status(500).json({ err: "invalid request" });
   }
 });
 // app.patch("/posts/:id", (req, res) => {
