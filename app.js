@@ -230,7 +230,7 @@ app.post("/newPost", (req, res) => {
   const author = newItems.given_name;
   const dateString =  generateDateString()
   const img ="https://loremflickr.com/640/360"
-  const newPost = { title: Title, content: Content, author: author, date: dateString, img: img };
+  const newPost = { title: Title, content: Content, author: author,email: email , date: dateString, img: img };
 
   db.collection("TheBLOGSPOsT")
     .insertOne( newPost )
