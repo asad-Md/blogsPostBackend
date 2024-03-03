@@ -210,7 +210,8 @@ app.post("/newPost", (req, res) => {
   const newItems = req.body;
   const Title = filter.clean(newItems.title);
   const Content = filter.clean(newItems.content);
-  const author = newItems.email;
+  const email = newItems.email;
+  const author = newItems.given_name;
   const dateString =  generateDateString()
   const img ="https://loremflickr.com/640/360"
   const newPost = { title: Title, content: Content, author: author, date: dateString, img: img };
@@ -220,7 +221,7 @@ app.post("/newPost", (req, res) => {
     .then(() => {
       db.collection("blogspostUsers")
     .updateOne(
-      { email: author },
+      { email: email },
       { $push: { userPosts: newPost } }
     )
     .then((result) => {
