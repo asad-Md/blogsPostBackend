@@ -244,15 +244,19 @@ app.post("/loginUser", async (req, res) => {
 
 });
 
-app.post("/newPost", (req, res) => {
+app.post("/newPost", async (req, res) => {
   const newItems = req.body;
   const Title = filter.clean(newItems.title);
   const Content = filter.clean(newItems.content);
   const email = newItems.email;
   const author = newItems.author;
+  const uid = newItems.uid;
   const dateString =  generateDateString()
   const img ="https://loremflickr.com/640/360"
   const newPost = { title: Title, content: Content, author: author,email: email , date: dateString, img: img };
+
+  const user =  await db.collection("blogspostUsers").findOne({ email: email });
+  if (user && user._id.toString() === uid ){
 
   db.collection("TheBLOGSPOsT")
     .insertOne( newPost )
@@ -276,6 +280,7 @@ app.post("/newPost", (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: "Error creating new document", error: err });
     });
+  }
 });
 
 
