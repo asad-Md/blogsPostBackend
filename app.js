@@ -16,7 +16,10 @@ const filter = new Filter();
 
 const app = express();
 app.use(cors());
-app.use(express.json()); //both can be use. cors for cross origin on local host.
+// app.use(express.json()); 
+//both can be use. cors for cross origin on local host.
+app.use(express.json({ limit: '50mb' })); // Adjust the limit as needed
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // db connection
 
 const CLIENT_ID =
