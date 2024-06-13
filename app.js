@@ -252,8 +252,8 @@ app.post("/newPost", async (req, res) => {
   const author = newItems.author;
   const uid = newItems.uid;
   const dateString =  generateDateString()
-  const img ="https://loremflickr.com/640/360"
-  const newPost = { title: Title, content: Content, author: author,email: email , date: dateString, img: img };
+  const img64 = newItems.img64; 
+  const newPost = { title: Title, content: Content, author: author,email: email , date: dateString, img64: img64 };
 
   const user =  await db.collection("blogspostUsers").findOne({ email: email });
   if (user && user._id.toString() === uid ){
