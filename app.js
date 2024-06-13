@@ -152,7 +152,7 @@ app.get("/posts/page/:page", (req, res) => {
 
   db.collection("TheBLOGSPOsT")
     .find()
-    .sort({ date: -1 })
+    .sort({ date: 1 })
     .skip(page * docsPerPage)
     .limit(docsPerPage)
     .forEach((post) => posts.push(post))
